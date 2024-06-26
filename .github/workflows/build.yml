@@ -24,6 +24,15 @@ jobs:
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Version
+        run: echo "Terraform version=$(terraform --version)"
+
           
       - name: Initialize Terraform
         working-directory: infrastructure
@@ -31,9 +40,9 @@ jobs:
         
       - name: Terraform Plan
         working-directory: infrastructure
-        run: terraform plan -out=tfplan
+        run: terraform plan 
         
       - name: Terraform Apply
         working-directory: infrastructure
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve 
 
