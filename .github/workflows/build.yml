@@ -1,0 +1,38 @@
+name: Terraform Automation
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests to the main branch
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Configure AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          
+      - name: Initialize Terraform
+        working-directory: infrastructure
+        run: terraform init
+        
+      - name: Terraform Plan
+        working-directory: infrastructure
+        run: terraform plan -out=tfplan
+        
+      - name: Terraform Apply
+        working-directory: infrastructure
+        run: terraform apply -auto-approve tfplan
+
